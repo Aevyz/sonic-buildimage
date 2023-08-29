@@ -10,15 +10,15 @@ FROM {{ prefix }}debian:stretch
 MAINTAINER gulv@microsoft.com
 
 COPY ["no-check-valid-until", "/etc/apt/apt.conf.d/"]
-
-RUN echo "deb [arch=amd64] http://archive.debian.org/debian/ stretch main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb-src [arch=amd64] http://archive.debian.org/debian/ stretch main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb [arch=amd64] http://archive.debian.org/debian-security/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb-src [arch=amd64] http://archive.debian.org/debian-security/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb [arch=amd64] http://archive.debian.org/ stretch-backports main" >> /etc/apt/sources.list #&& \
-        #echo "deb [arch=amd64] http://packages.trafficmanager.net/debian/debian stretch main contrib non-free" >> /etc/apt/sources.list && \
-        #echo "deb [arch=amd64] http://packages.trafficmanager.net/debian/debian stretch-updates main contrib non-free" >> /etc/apt/sources.list && \
-        #echo "deb [arch=amd64] http://packages.microsoft.com/debian/9/prod stretch main" >> /etc/apt/sources.list
+RUN rm /etc/apt/sources.list
+RUN echo "deb  http://archive.debian.org/debian/ stretch main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb-src http://archive.debian.org/debian/ stretch main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb  http://archive.debian.org/debian-security/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb-src  http://archive.debian.org/debian-security/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb  http://archive.debian.org/ stretch-backports main" >> /etc/apt/not-sources.list && \
+        echo "deb [arch=amd64] http://packages.trafficmanager.net/debian/debian stretch main contrib non-free" >> /etc/apt/not-sources.list && \
+        echo "deb [arch=amd64] http://packages.trafficmanager.net/debian/debian stretch-updates main contrib non-free" >> /etc/apt/not-sources.list && \
+        echo "deb [arch=amd64] http://packages.microsoft.com/debian/9/prod stretch main" >> /etc/apt/not-sources.list
 
 {%- if CONFIGURED_ARCH == "armhf" %}
 RUN echo "deb [arch=armhf] http://deb.debian.org/debian stretch main contrib non-free" > /etc/apt/sources.list && \
@@ -45,7 +45,8 @@ RUN echo "deb [arch=arm64] http://deb.debian.org/debian stretch main contrib non
 ## Make apt-get non-interactive
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update 
+RUN apt-get install -y \
         apt-utils \
         default-jre-headless \
         openssh-server \
